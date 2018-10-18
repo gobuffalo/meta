@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/envy"
 
 	fname "github.com/gobuffalo/flect/name"
@@ -66,7 +67,8 @@ func New(root string) App {
 		return oldSchool(app)
 	}
 	defer cf.Close()
-	if err := (&app).Decode(cf); err != nil {
+
+	if _, err := toml.DecodeReader(cf, &app); err != nil {
 		fmt.Println(err)
 	}
 
