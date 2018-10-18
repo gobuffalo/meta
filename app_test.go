@@ -40,3 +40,12 @@ func Test_ModulesPackageName(t *testing.T) {
 		})
 	}
 }
+
+func Test_App_IsZero(t *testing.T) {
+	r := require.New(t)
+
+	app := App{}
+	r.True(app.IsZero())
+	app = New(".")
+	r.False(app.IsZero())
+}

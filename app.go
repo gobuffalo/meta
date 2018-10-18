@@ -37,6 +37,10 @@ type App struct {
 	WithModules bool       `json:"with_modules"`
 }
 
+func (a App) IsZero() bool {
+	return a.String() == App{}.String()
+}
+
 func resolvePackageName(name string, pwd string, modsOn bool) string {
 	result := envy.CurrentPackage()
 
