@@ -10,30 +10,31 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/flect/name"
 )
 
 var modsOn = (strings.TrimSpace(envy.Get("GO111MODULE", "off")) == "on")
 
 // App represents meta data for a Buffalo application on disk
 type App struct {
-	Pwd         string `json:"pwd"`
-	Root        string `json:"root"`
-	GoPath      string `json:"go_path"`
-	Name        string `json:"name"`
-	Bin         string `json:"bin"`
-	PackagePkg  string `json:"package_path"`
-	ActionsPkg  string `json:"actions_path"`
-	ModelsPkg   string `json:"models_path"`
-	GriftsPkg   string `json:"grifts_path"`
-	VCS         string `json:"vcs"`
-	WithPop     bool   `json:"with_pop"`
-	WithSQLite  bool   `json:"with_sqlite"`
-	WithDep     bool   `json:"with_dep"`
-	WithWebpack bool   `json:"with_webpack"`
-	WithYarn    bool   `json:"with_yarn"`
-	WithDocker  bool   `json:"with_docker"`
-	WithGrifts  bool   `json:"with_grifts"`
-	WithModules bool   `json:"with_modules"`
+	Pwd         string     `json:"pwd"`
+	Root        string     `json:"root"`
+	GoPath      string     `json:"go_path"`
+	Name        name.Ident `json:"name"`
+	Bin         string     `json:"bin"`
+	PackagePkg  string     `json:"package_path"`
+	ActionsPkg  string     `json:"actions_path"`
+	ModelsPkg   string     `json:"models_path"`
+	GriftsPkg   string     `json:"grifts_path"`
+	VCS         string     `json:"vcs"`
+	WithPop     bool       `json:"with_pop"`
+	WithSQLite  bool       `json:"with_sqlite"`
+	WithDep     bool       `json:"with_dep"`
+	WithWebpack bool       `json:"with_webpack"`
+	WithYarn    bool       `json:"with_yarn"`
+	WithDocker  bool       `json:"with_docker"`
+	WithGrifts  bool       `json:"with_grifts"`
+	WithModules bool       `json:"with_modules"`
 }
 
 func resolvePackageName(name string, pwd string, modsOn bool) string {

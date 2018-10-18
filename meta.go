@@ -8,6 +8,8 @@ import (
 	"runtime"
 
 	"github.com/gobuffalo/envy"
+
+	fname "github.com/gobuffalo/flect/name"
 )
 
 // New App based on the details found at the provided root path
@@ -42,7 +44,7 @@ func New(root string) App {
 		Pwd:         pwd,
 		Root:        root,
 		GoPath:      envy.GoPath(),
-		Name:        name,
+		Name:        fname.New(name),
 		PackagePkg:  pp,
 		ActionsPkg:  pp + "/actions",
 		ModelsPkg:   pp + "/models",
