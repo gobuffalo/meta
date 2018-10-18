@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -39,6 +40,20 @@ func Test_ModulesPackageName(t *testing.T) {
 			r.Equal(tcase.PackageName, a.PackagePkg)
 		})
 	}
+}
+
+func Test_App_Encoding(t *testing.T) {
+	r := require.New(t)
+
+	a := New(".")
+	bb := &bytes.Buffer{}
+	r.NoError(a.Encode(bb))
+
+	b := App{}
+
+	r.NoError((&b).Decode(bb))
+
+	r.Equal(a.String(), b.String())
 }
 
 func Test_App_IsZero(t *testing.T) {

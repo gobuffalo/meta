@@ -2,6 +2,7 @@ package meta
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -9,17 +10,19 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/flect/name"
+	"github.com/pkg/errors"
 )
 
 var modsOn = (strings.TrimSpace(envy.Get("GO111MODULE", "off")) == "on")
 
 // App represents meta data for a Buffalo application on disk
 type App struct {
-	Pwd         string     `json:"pwd"`
-	Root        string     `json:"root"`
-	GoPath      string     `json:"go_path"`
+	Pwd         string     `json:"pwd" toml:"-"`
+	Root        string     `json:"root" toml:"-"`
+	GoPath      string     `json:"go_path" toml:"-"`
 	Name        name.Ident `json:"name"`
 	Bin         string     `json:"bin"`
 	PackagePkg  string     `json:"package_path"`
@@ -34,7 +37,9 @@ type App struct {
 	WithYarn    bool       `json:"with_yarn"`
 	WithDocker  bool       `json:"with_docker"`
 	WithGrifts  bool       `json:"with_grifts"`
-	WithModules bool       `json:"with_modules"`
+	WithModules bool       `json:"with_modules" toml:"-"`
+	AsWeb       bool       `json:"as_web"`
+	AsAPI       bool       `json:"as_api"`
 }
 
 func (a App) IsZero() bool {
@@ -90,4 +95,22 @@ func ResolveSymlinks(p string) string {
 func (a App) String() string {
 	b, _ := json.Marshal(a)
 	return string(b)
+}
+
+// Encode the list of plugins, in TOML format, to the reader
+func (a App) Encode(w io.Writer) error {
+	if err := toml.NewEncoder(w).Encode(a); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+// Decode the list of plugins, in TOML format, from the reader
+func (a *App) Decode(r io.Reader) error {
+	xa := New(".")
+	if _, err := toml.DecodeReader(r, &xa); err != nil {
+		return errors.WithStack(err)
+	}
+	(*a) = xa
+	return nil
 }

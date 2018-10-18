@@ -2,6 +2,7 @@ package meta
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -50,13 +51,30 @@ func New(root string) App {
 		ModelsPkg:   pp + "/models",
 		GriftsPkg:   pp + "/grifts",
 		WithModules: modsOn,
+		AsAPI:       false,
+		AsWeb:       true,
 	}
 
-	app.Bin = filepath.Join("bin", filepath.Base(root))
+	app.Bin = filepath.Join("bin", app.Name.String())
 
 	if runtime.GOOS == "windows" {
 		app.Bin += ".exe"
 	}
+
+	cf, err := os.Open(filepath.Join(app.Root, "config", "buffalo-app.toml"))
+	if err != nil {
+		return oldSchool(app)
+	}
+	defer cf.Close()
+	if err := (&app).Decode(cf); err != nil {
+		fmt.Println(err)
+	}
+
+	return app
+}
+
+func oldSchool(app App) App {
+	root := app.Root
 	db := filepath.Join(root, "database.yml")
 	if _, err := os.Stat(db); err == nil {
 		app.WithPop = true
@@ -84,6 +102,5 @@ func New(root string) App {
 	} else if _, err := os.Stat(filepath.Join(root, ".bzr")); err == nil {
 		app.VCS = "bzr"
 	}
-
 	return app
 }

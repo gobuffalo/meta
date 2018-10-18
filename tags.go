@@ -1,8 +1,7 @@
 package meta
 
 import (
-	"bytes"
-	"io/ioutil"
+	"sort"
 	"strings"
 )
 
@@ -20,11 +19,21 @@ func (t BuildTags) String() string {
 // An example would be adding the "sqlite" build tag if using
 // SQLite3.
 func (a App) BuildTags(env string, tags ...string) BuildTags {
-	tags = append(tags, env)
-	if b, err := ioutil.ReadFile("database.yml"); err == nil {
-		if bytes.Contains(b, []byte("sqlite")) {
-			tags = append(tags, "sqlite")
+	m := map[string]string{}
+	m[env] = env
+	for _, t := range tags {
+		m[t] = t
+	}
+	if a.WithSQLite {
+		m["sqlite"] = "sqlite"
+	}
+	var tt []string
+	for k := range m {
+		k = strings.TrimSpace(k)
+		if len(k) != 0 {
+			tt = append(tt, k)
 		}
 	}
-	return BuildTags(tags)
+	sort.Strings(tt)
+	return BuildTags(tt)
 }
