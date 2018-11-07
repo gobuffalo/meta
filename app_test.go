@@ -14,7 +14,7 @@ import (
 func Test_ModulesPackageName(t *testing.T) {
 	r := require.New(t)
 	tmp := os.TempDir()
-	modsOn = true
+	envy.Set(envy.GO111MODULE, "on")
 
 	r.NoError(os.Chdir(tmp))
 
