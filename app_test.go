@@ -64,3 +64,14 @@ func Test_App_IsZero(t *testing.T) {
 	app = New(".")
 	r.False(app.IsZero())
 }
+
+func Test_App_PackageRoot(t *testing.T) {
+	r := require.New(t)
+
+	app := App{}
+
+	app.PackageRoot("foo.com/bar")
+	r.Equal("foo.com/bar/actions", app.ActionsPkg)
+	r.Equal("foo.com/bar/models", app.ModelsPkg)
+	r.Equal("foo.com/bar/grifts", app.GriftsPkg)
+}
