@@ -33,6 +33,7 @@ type App struct {
 	WithSQLite  bool       `json:"with_sqlite" toml:"with_sqlite"`
 	WithDep     bool       `json:"with_dep" toml:"with_dep"`
 	WithWebpack bool       `json:"with_webpack" toml:"with_webpack"`
+	WithNodeJs  bool       `json:"with_nodejs" toml:"with_nodejs"`
 	WithYarn    bool       `json:"with_yarn" toml:"with_yarn"`
 	WithDocker  bool       `json:"with_docker" toml:"with_docker"`
 	WithGrifts  bool       `json:"with_grifts" toml:"with_grifts"`
