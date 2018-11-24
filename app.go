@@ -122,3 +122,25 @@ func (a *App) PackageRoot(pp string) {
 	a.ModelsPkg = pp + "/models"
 	a.GriftsPkg = pp + "/grifts"
 }
+
+type packageJSON struct {
+	Scripts map[string]interface{} `json:"scripts"`
+}
+
+// HasNodeJsScript returns true if the app has a package.json file
+// with a "scripts" section containing the given script name.
+func (a App) HasNodeJsScript(name string) bool {
+	if !a.WithNodeJs {
+		return false
+	}
+	b, err := ioutil.ReadFile(filepath.Join(a.Root, "package.json"))
+	if err != nil {
+		return false
+	}
+	p := packageJSON{}
+	if err := json.Unmarshal(b, &p); err != nil {
+		return false
+	}
+	_, ok := p.Scripts[name]
+	return ok
+}
