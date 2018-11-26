@@ -127,20 +127,28 @@ type packageJSON struct {
 	Scripts map[string]interface{} `json:"scripts"`
 }
 
-// HasNodeJsScript returns true if the app has a package.json file
-// with a "scripts" section containing the given script name.
-func (a App) HasNodeJsScript(name string) bool {
+// NodeJsScript gets the "scripts" section from package.json and
+// returns the matching script if it exists and true; nil and false
+// otherwise.
+func (a App) NodeJsScript(name string) (interface{}, bool) {
 	if !a.WithNodeJs {
-		return false
+		return nil, false
 	}
 	b, err := ioutil.ReadFile(filepath.Join(a.Root, "package.json"))
 	if err != nil {
-		return false
+		return nil, false
 	}
 	p := packageJSON{}
 	if err := json.Unmarshal(b, &p); err != nil {
-		return false
+		return nil, false
 	}
-	_, ok := p.Scripts[name]
+	s, ok := p.Scripts[name]
+	return s, ok
+}
+
+// HasNodeJsScript returns true if the app has a package.json file
+// with a "scripts" section containing the given script name.
+func (a App) HasNodeJsScript(name string) bool {
+	_, ok := a.NodeJsScript(name)
 	return ok
 }

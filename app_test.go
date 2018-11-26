@@ -87,7 +87,8 @@ func Test_App_HasNodeJsScript(t *testing.T) {
     "license": "MIT",
     "scripts": {
         "dev": "webpack --watch",
-        "build": "webpack -p --progress"
+		"build": "webpack -p --progress",
+		"start": true
     },
     "dependencies": {
     "bootstrap-sass": "~3.3.7",
@@ -135,6 +136,7 @@ func Test_App_HasNodeJsScript(t *testing.T) {
 	a := New(".")
 
 	r.True(a.HasNodeJsScript("dev"))
+	r.True(a.HasNodeJsScript("start"))
 	r.False(a.HasNodeJsScript("test"))
 
 	r.NoError(os.Remove("package.json"))
