@@ -87,8 +87,7 @@ func Test_App_HasNodeJsScript(t *testing.T) {
     "license": "MIT",
     "scripts": {
         "dev": "webpack --watch",
-		"build": "webpack -p --progress",
-		"start": true
+		"build": "webpack -p --progress"
     },
     "dependencies": {
     "bootstrap-sass": "~3.3.7",
@@ -135,11 +134,14 @@ func Test_App_HasNodeJsScript(t *testing.T) {
 	r.NoError(ioutil.WriteFile("package.json", []byte(pJSON), 0644))
 	a := New(".")
 
-	r.True(a.HasNodeJsScript("dev"))
-	r.True(a.HasNodeJsScript("start"))
-	r.False(a.HasNodeJsScript("test"))
+	s, err := a.NodeScript("dev")
+	r.NoError(err)
+	r.Equal("webpack --watch", s)
+	s, err = a.NodeScript("test")
+	r.EqualError(err, "node script test not found")
 
 	r.NoError(os.Remove("package.json"))
 	a = New(".")
-	r.False(a.HasNodeJsScript("dev"))
+	s, err = a.NodeScript("dev")
+	r.EqualError(err, "package.json not found")
 }
