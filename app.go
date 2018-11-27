@@ -2,6 +2,7 @@ package meta
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/flect/name"
+	"github.com/markbates/oncer"
 	"github.com/pkg/errors"
 )
 
@@ -39,6 +41,7 @@ type App struct {
 	WithGrifts  bool       `json:"with_grifts" toml:"with_grifts"`
 	AsWeb       bool       `json:"as_web" toml:"as_web"`
 	AsAPI       bool       `json:"as_api" toml:"as_api"`
+	packageJSON packageJSON
 }
 
 func (a App) IsZero() bool {
@@ -121,4 +124,41 @@ func (a *App) PackageRoot(pp string) {
 	a.ActionsPkg = pp + "/actions"
 	a.ModelsPkg = pp + "/models"
 	a.GriftsPkg = pp + "/grifts"
+}
+
+type packageJSON struct {
+	Scripts map[string]string `json:"scripts"`
+}
+
+// NodeScript gets the "scripts" section from package.json and
+// returns the matching script if it exists.
+func (a App) NodeScript(name string) (string, error) {
+	if !a.WithNodeJs {
+		return "", errors.New("package.json not found")
+	}
+	var err error
+	oncer.Do("meta.NodeScript", func() {
+		var b []byte
+		b, err = ioutil.ReadFile(filepath.Join(a.Root, "package.json"))
+		if err != nil {
+			err = errors.WithMessage(err, "could not read package.json")
+			return
+		}
+		p := packageJSON{}
+		if err = json.Unmarshal(b, &p); err != nil {
+			err = errors.WithMessage(err, "could not parse package.json")
+			return
+		}
+		a.packageJSON = p
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	s, ok := a.packageJSON.Scripts[name]
+	if ok {
+		return s, nil
+	}
+	return "", fmt.Errorf("node script %s not found", name)
 }
