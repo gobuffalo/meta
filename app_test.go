@@ -33,10 +33,11 @@ func Test_ModulesPackageName(t *testing.T) {
 
 		t.Run(tcase.Content, func(st *testing.T) {
 			r := require.New(st)
+			ap := filepath.Join(tmp, "zekito")
+			r.NoError(os.MkdirAll(ap, 0755))
+			r.NoError(ioutil.WriteFile(filepath.Join(ap, "go.mod"), []byte(tcase.Content), 0644))
 
-			r.NoError(ioutil.WriteFile("go.mod", []byte(tcase.Content), 0644))
-
-			a := New(filepath.Join(tmp, "zekito"))
+			a := New(ap)
 			r.Equal(tcase.PackageName, a.PackagePkg)
 		})
 	}
