@@ -11,6 +11,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func Test_AppName(t *testing.T) {
+	envy.Temp(func() {
+		envy.Set(envy.GO111MODULE, "off")
+		table := []struct {
+			root string
+			name string
+		}{
+			{"/Users/markbates/go/src/foo", "foo"},
+			{"coke", "coke"},
+			{".", "meta"},
+			{"", "meta"},
+		}
+
+		for _, tt := range table {
+			t.Run(tt.root, func(st *testing.T) {
+				r := require.New(st)
+				app := New(tt.name)
+				r.Equal(tt.name, app.Name.String())
+			})
+		}
+	})
+}
+
 func Test_ModulesPackageName(t *testing.T) {
 	r := require.New(t)
 	tmp := os.TempDir()
