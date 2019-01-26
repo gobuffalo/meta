@@ -2,6 +2,7 @@ package meta
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -59,6 +60,13 @@ func Named(name string, root string) App {
 
 	if runtime.GOOS == "windows" {
 		app.Bin += ".exe"
+	}
+
+	pf, err := os.Open(filepath.Join(app.Root, "package.json"))
+	if err == nil {
+		if err = json.NewDecoder(pf).Decode(&app.PackageJSON); err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	cf, err := os.Open(filepath.Join(app.Root, "config", "buffalo-app.toml"))

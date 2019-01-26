@@ -2,9 +2,11 @@ package meta
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/gobuffalo/envy"
@@ -147,24 +149,19 @@ func Test_App_HasNodeJsScript(t *testing.T) {
   }
 }
 	`
-
-	tmp, err := ioutil.TempDir("", "")
-	r.NoError(err)
-	defer os.RemoveAll(tmp)
-	cd, err := os.Getwd()
-	r.NoError(err)
-	defer os.Chdir(cd)
-	r.NoError(os.Chdir(tmp))
-	r.NoError(ioutil.WriteFile("package.json", []byte(pJSON), 0644))
 	a := New(".")
+	a.WithNodeJs = true
+	r.NoError(json.NewDecoder(strings.NewReader(pJSON)).Decode(&a.PackageJSON))
 
 	s, err := a.NodeScript("dev")
 	r.NoError(err)
 	r.Equal("webpack --watch", s)
+	s, err = a.NodeScript("build")
+	r.NoError(err)
+	r.Equal("webpack -p --progress", s)
 	s, err = a.NodeScript("test")
 	r.EqualError(err, "node script test not found")
 
-	r.NoError(os.Remove("package.json"))
 	a = New(".")
 	s, err = a.NodeScript("dev")
 	r.EqualError(err, "package.json not found")
