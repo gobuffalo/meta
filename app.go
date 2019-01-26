@@ -16,11 +16,12 @@ import (
 	"github.com/rogpeppe/go-internal/modfile"
 )
 
+// PackageJSON stores package.json meta data used by Buffalo.
 type PackageJSON struct {
 	Scripts map[string]string `json:"scripts"`
 }
 
-// App represents meta data for a Buffalo application on disk
+// App represents meta data for a Buffalo application on disk.
 type App struct {
 	Pwd         string      `json:"pwd" toml:"-"`
 	Root        string      `json:"root" toml:"-"`
@@ -46,6 +47,7 @@ type App struct {
 	PackageJSON PackageJSON `json:"-" toml:"-"`
 }
 
+// IsZero checks if the App struct has no set field.
 func (a App) IsZero() bool {
 	return a.String() == App{}.String()
 }

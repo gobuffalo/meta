@@ -15,6 +15,7 @@ import (
 	fname "github.com/gobuffalo/flect/name"
 )
 
+// Named gathers app data using the given name and root path.
 func Named(name string, root string) App {
 	pwd, _ := os.Getwd()
 	root = strings.TrimPrefix(root, "/private")
@@ -82,7 +83,7 @@ func Named(name string, root string) App {
 	return app
 }
 
-// New App based on the details found at the provided root path
+// New gathers app data using the given root path. The app name is guessed from the root path.
 func New(root string) App {
 	return Named(filepath.Base(root), root)
 }
