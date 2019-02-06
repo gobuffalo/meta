@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/envy"
@@ -61,7 +62,14 @@ func resolvePackageName(name string, pwd string) string {
 	if envy.Mods() {
 		moddata, err := ioutil.ReadFile(filepath.Join(pwd, name, "go.mod"))
 		if err != nil {
-			return result
+			if envy.InGoPath() {
+				p := envy.CurrentPackage()
+				if !strings.HasSuffix(p, name) {
+					return path.Join(p, name)
+				}
+				return p
+			}
+			return name
 		}
 		packagePath := modfile.ModulePath(moddata)
 		if packagePath == "" {
