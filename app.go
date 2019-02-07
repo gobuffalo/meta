@@ -60,7 +60,11 @@ func resolvePackageName(name string, pwd string) string {
 		result = path.Join(result, name)
 	}
 	if envy.Mods() {
-		moddata, err := ioutil.ReadFile(filepath.Join(pwd, name, "go.mod"))
+		modp := filepath.Join(pwd, name, "go.mod")
+		if strings.HasSuffix(pwd, name) {
+			modp = filepath.Join(pwd, "go.mod")
+		}
+		moddata, err := ioutil.ReadFile(modp)
 		if err != nil {
 			if envy.InGoPath() {
 				p := envy.CurrentPackage()
