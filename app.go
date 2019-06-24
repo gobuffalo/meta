@@ -13,7 +13,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/flect/name"
-	"github.com/pkg/errors"
 	"github.com/rogpeppe/go-internal/modfile"
 )
 
@@ -112,7 +111,7 @@ func (a App) String() string {
 // Encode the list of plugins, in TOML format, to the reader
 func (a App) Encode(w io.Writer) error {
 	if err := toml.NewEncoder(w).Encode(a); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	return nil
 }
@@ -121,7 +120,7 @@ func (a App) Encode(w io.Writer) error {
 func (a *App) Decode(r io.Reader) error {
 	xa := New(".")
 	if _, err := toml.DecodeReader(r, &xa); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	(*a) = xa
 	return nil
@@ -140,7 +139,7 @@ func (a *App) PackageRoot(pp string) {
 // returns the matching script if it exists.
 func (a App) NodeScript(name string) (string, error) {
 	if !a.WithNodeJs {
-		return "", errors.New("package.json not found")
+		return "", fmt.Errorf("package.json not found")
 	}
 
 	s, ok := a.PackageJSON.Scripts[name]
