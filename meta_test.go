@@ -1,19 +1,35 @@
 package meta
 
 import (
-	"strings"
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
 
-	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/here"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Named(t *testing.T) {
-	envy.Set(envy.GO111MODULE, "off")
+func Test_New(t *testing.T) {
 	r := require.New(t)
 
-	app := Named("coke", ".")
-	r.Equal("coke", app.Name.String())
-	r.True(strings.HasSuffix(app.PackagePkg, "/coke"))
-	r.True(strings.HasSuffix(app.ModelsPkg, "/coke/models"))
+	pwd, err := os.Getwd()
+	r.NoError(err)
+
+	a, err := NewDir(pwd)
+	r.NoError(err)
+
+	r.NotZero(a)
+
+	info, err := here.Dir(pwd)
+	r.NoError(err)
+	r.Equal(info, a.Info)
+
+	bin := filepath.Join("bin", "meta")
+	if runtime.GOOS == "windows" {
+		bin += ".exe"
+	}
+	r.Equal(bin, a.Bin)
+
+	r.Equal("git", a.VCS)
 }
