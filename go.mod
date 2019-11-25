@@ -1,4 +1,4 @@
-module github.com/gobuffalo/meta
+module github.com/gobuffalo/meta/v2
 
 go 1.13
 

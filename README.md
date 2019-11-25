@@ -15,3 +15,39 @@ $ go get github.com/gobuffalo/meta/v2
 ```
 
 ---
+
+## V2 Toml
+
+```toml
+bin = "bin/coke"
+vcs = "git"
+
+[with]
+  nodejs = true
+  pop = true
+  sqlite = false
+  webpack = true
+  yarn = true
+
+[as]
+  api = false
+  web = true
+```
+
+## V1 Toml
+
+```toml
+name = "coke"
+bin = "bin/coke"
+vcs = "git"
+with_pop = true
+with_sqlite = false
+with_dep = false
+with_webpack = true
+with_nodejs = true
+with_yarn = true
+with_docker = true
+with_grifts = true
+as_web = true
+as_api = false
+```
