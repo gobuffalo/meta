@@ -30,7 +30,7 @@ func Unmarshal(info here.Info, b []byte) (*App, error) {
 		return nil, err
 	}
 
-	a, err = New(info)
+	a, err = construct(info)
 	if err != nil {
 		return nil, err
 	}
