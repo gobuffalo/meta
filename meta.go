@@ -51,7 +51,7 @@ func Named(name string, root string) App {
 		Root:        root,
 		GoPath:      envy.GoPath(),
 		Name:        fname.New(name),
-		WithModules: envy.Mods(),
+		WithModules: true,
 		AsAPI:       false,
 		AsWeb:       true,
 	}
